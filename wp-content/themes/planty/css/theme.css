@@ -1,0 +1,156 @@
+
+body * {
+   font-family: 'syne', sans-serif;
+}
+/* page commander */
+.form-group{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    color: #FFFFFF;
+
+}
+.form-text
+{
+    color: #FFFFFF;
+    
+}
+.form-commander{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: 60px;
+    
+}
+.vertical-line{
+    border-left: 1px solid #ffffff;
+    display: inline-block;
+    height: 340px;
+    
+  }
+  .colorr{
+    background-color: #FFFFFF;
+    border-radius: 5px 5px 5px 5px;
+    margin-top: -20px;
+  }
+
+/* nous rencontrer */
+.text-contact{
+    color: black;
+}
+.form-contact{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+}
+.from-envoyer{
+    text-align: center;
+    margin-left: 50px;
+}
+
+
+/* menu de navigation */
+
+.menu{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+   font-size: 16px;
+   font-family: syne; 
+}
+#menu-main-menu{
+    margin: 0px;
+}
+li{
+    list-style: none;
+    
+}
+
+
+
+#menu-item-15{
+    Width:  150px;
+    height:  70px;
+    background-color: #DC9F96;
+    text-align: center;
+    padding-bottom:  15px;
+    margin-left: 50px;
+    
+}
+#menu-item-15 a{
+    color: #FFFFFF;
+    text-align: center;
+    
+}
+#menu-item-14{
+    
+    order: 1;
+}
+li a{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    padding-left: 40px;
+    order: 2;
+}
+.logo{
+    width: 220px;
+    height: 30px;
+    
+    margin-left: 30px;
+    margin-top: 20px;
+      
+}
+.wpcf7 form .wpcf7-response-output {
+    margin:0em;
+    padding:0em;
+    border: none;
+    color: darkgreen;
+    text-align: center;
+}
+
+
+
+/* le responsive */
+
+  @media  (max-width: 695px){
+    .vertical-line{
+        border-left: none;
+        display: none;
+    }
+   
+    .form-group{
+        display: flex;
+        justify-content: center;
+       
+    
+    }
+    
+  }
+  @media  (max-width: 750px){
+    .menu{
+    display: flex;
+    flex-direction:  column-reverse;
+    
+    }
+    #menu-main-menu{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+        margin-right: 50px;
+
+    }
+    #menu-item-15{
+        Width:  160px;
+        height:  70px;
+        background-color: #DC9F96;
+        text-align: center;
+        padding-bottom:  15px;
+        margin-top: 20px;
+        
+    }
+    
+  }
+
