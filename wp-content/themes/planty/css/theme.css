@@ -110,7 +110,9 @@ li a{
     text-align: center;
 }
 
-
+.wpcf7 form .wpcf7-response-output{
+    color: #FFFFFF;
+}
 
 /* le responsive */
 
