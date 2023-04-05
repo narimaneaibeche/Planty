@@ -50,9 +50,9 @@
 				 	 
 				 ) ); 
 		  ?> 
-	      <a href="http://localhost:8888/Planty2/"><img class="logo" src="http://localhost:8888/Planty2/wp-content/uploads/2023/03/Logo-2048x188.png" alt="Logo planty" > </a>   
+	      <a href="http://localhost:8888/Planty2/"><img class="logo" src="http://localhost:8888/Planty2/wp-content/uploads/2023/03/Logo-2048x188.png" alt="Logo planty" ></a>   
 	    </div>
-		
+	
 	
 	
 	
