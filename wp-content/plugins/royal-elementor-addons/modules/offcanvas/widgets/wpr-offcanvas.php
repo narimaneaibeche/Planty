@@ -205,7 +205,7 @@ class Wpr_Offcanvas extends Widget_Base {
 			'offcanvas_reverse_header',
 			[
 				'label' => sprintf( __( 'Reverse Header %s', 'wpr-addons' ), '<i class="eicon-pro-icon"></i>' ),
-				'description' => esc_html__('Reverse Close Icon and Title Locations'),
+				'description' => esc_html__('Reverse Close Icon and Title Locations', 'wpr-addons'),
 				'type' => Controls_Manager::SWITCHER,
 				'render_type' => 'template',
 				'classes' => 'wpr-pro-control no-distance',
@@ -301,6 +301,9 @@ class Wpr_Offcanvas extends Widget_Base {
 			'offcanvas_title', [
 				'label' => esc_html__( 'Title', 'wpr-addons' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => esc_html__( 'Offcanvas', 'wpr-addons' ),
 				'condition' => [
 					'offcanvas_show_header_title' => 'yes'
@@ -355,6 +358,9 @@ class Wpr_Offcanvas extends Widget_Base {
 			[
 				'label' => esc_html__( 'Title', 'wpr-addons' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => esc_html__( 'Click Here', 'wpr-addons' ),
 				'condition' => [
 					'offcanvas_show_button_title' => 'yes'
@@ -952,6 +958,50 @@ class Wpr_Offcanvas extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'offcanvas_scrollbar_heading',
+			[
+				'label' => esc_html__( 'Scrollbar', 'wpr-addons' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before'
+			]
+		);
+
+		$this->add_control(
+			'offcanvas_scrollbar_color',
+			[
+				'label' => esc_html__( 'Color', 'wpr-addons' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#E8E8E8',
+				'selectors' => [
+					'{{WRAPPER}} .wpr-offcanvas-content::-webkit-scrollbar-thumb' => 'border-left-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'scrollbar_width',
+			[
+				'label' => esc_html__( 'Width', 'wpr-addons' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => ['px'],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 10,
+					]
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 3,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .wpr-offcanvas-content::-webkit-scrollbar-thumb' => 'border-left-width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .wpr-offcanvas-content::-webkit-scrollbar' => 'width: calc({{SIZE}}{{UNIT}} + 3px);',
+				]
+			]
+		);
+
         $this->end_controls_section();
 
     }
@@ -998,7 +1048,7 @@ class Wpr_Offcanvas extends Widget_Base {
 						if ( !empty($settings['offcanvas_template']) ) {
 							echo $this->wpr_offcanvas_template($settings['offcanvas_template']);
 						} else {
-							echo '<p>'. esc_html__('Please select a template!') .'</p>';
+							echo '<p>'. esc_html__('Please select a template!', 'wpr-addons') .'</p>';
 						}
 					?>
 				</div>

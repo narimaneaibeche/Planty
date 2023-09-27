@@ -708,6 +708,7 @@ class WP_Mobile_Menu_Core
     
     }
     
+   
     
     /**
      * Register the Mobile Menus.
@@ -815,7 +816,10 @@ class WP_Mobile_Menu_Core
         }
         
         if ( ('logo' === $header_branding || 'logo-text' === $header_branding || 'text-logo' === $header_branding) && '' !== $logo_img ) {
+            
+            
             $logo_output .= '<img class="mob-standard-logo" src="' . $logo_img . '"  alt="' . $logo_alt . '">';
+            
             // If there is a retina logo.
             if ( isset( $logo_img_retina ) ) {
                 $logo_output .= '<img class="mob-retina-logo" src="' . $logo_img_retina . '"  alt="' . __( 'Logo Header Menu', 'mobile-menu' ) . '">';

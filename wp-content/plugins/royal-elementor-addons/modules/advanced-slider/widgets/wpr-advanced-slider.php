@@ -15,6 +15,7 @@ use Elementor\Core\Schemes\Typography;
 use Elementor\Utils;
 use Elementor\Icons;
 use Elementor\Icons_Manager;
+use Elementor\Modules\DynamicTags\Module as TagsModule;
 use WprAddons\Classes\Utilities;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -180,8 +181,20 @@ class Wpr_Advanced_Slider extends Widget_Base {
 
 	public function add_repeater_args_slider_item_link_type() {
 		return [
-			'type' => Controls_Manager::HIDDEN,
-			'default' => ''
+			'label' => esc_html__( 'Link Type', 'wpr-addons' ),
+			'type' => Controls_Manager::SELECT,
+			'default' => 'none',
+			'options' => [
+				'none' => esc_html__( 'None', 'wpr-addons' ),
+				'pro-cstm' => esc_html__( 'Custom URL (Pro)', 'wpr-addons' ),
+				'pro-yt'  => esc_html__( 'Youtube (Pro)', 'wpr-addons' ),
+				'pro-vm'  => esc_html__( 'Vimeo (Pro)', 'wpr-addons' ),
+				'pro-md'  => esc_html__( 'Custom Video (Pro)', 'wpr-addons' )
+			],
+			'condition' => [
+				'slider_content_type' => 'custom'
+			],
+			'separator' => 'before'
 		];
 	}
 
@@ -304,6 +317,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Image', 'wpr-addons' ),
 				'type' => Controls_Manager::MEDIA,
+				'dynamic' => [
+					'active' => true,
+				]
 			]
 		);
 
@@ -321,15 +337,36 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} {{CURRENT_ITEM}} .wpr-slider-item-bg' => 'background-size: {{VALUE}}',
 				],
+				// 'conditions' => [
+				// 	'slider_content_type' => 'custom'
+				// ]
 			]
 		);
 
 		$repeater->add_control( 'slider_item_link_type', $this->add_repeater_args_slider_item_link_type() );
 
+		// Upgrade to Pro Notice
+		Utilities::upgrade_pro_notice( $repeater, Controls_Manager::RAW_HTML, 'advanced-slider', 'slider_item_link_type', ['pro-cstm', 'pro-yt', 'pro-vm', 'pro-md'] );
+
+		$repeater->add_control(
+			'vimeo_notice',
+			[
+				'type' => Controls_Manager::RAW_HTML,
+				'raw' => 'Please Upload Background Image',
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+				'condition' => [
+					'slider_item_link_type' => 'video-vimeo'
+				]
+			]
+		);
+
 		$repeater->add_control(
 			'slider_item_bg_image_url',
 			[
 				'type' => Controls_Manager::URL,
+				'dynamic' => [
+					'active' => true,
+				],
 				'placeholder' => esc_html__( 'https://your-link.com', 'wpr-addons' ),
 				'show_label' => false,
 				'condition' => [
@@ -339,12 +376,38 @@ class Wpr_Advanced_Slider extends Widget_Base {
 		);
 
 		$repeater->add_control(
+			'hosted_url',
+			[
+				'label' => esc_html__( 'Choose File', 'elementor' ),
+				'type' => Controls_Manager::MEDIA,
+				'dynamic' => [
+					'active' => true,
+					'categories' => [
+						TagsModule::MEDIA_CATEGORY,
+					],
+				],
+				'media_type' => 'video',
+				'condition' => [
+					'slider_content_type' => 'custom',
+					'slider_item_link_type' => 'video-media',
+				],
+				'ai' => [
+					'active' => false,
+				],
+			]
+		);
+
+		$repeater->add_control(
 			'slider_item_video_src',
 			[
 				'label' => esc_html__( 'Video URL', 'wpr-addons' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'placeholder' => esc_html__( 'https://www.your-link.com', 'wpr-addons' ),
 				'condition' => [
+					'slider_content_type' => 'custom',
 					'slider_item_link_type' => ['video-youtube', 'video-vimeo'],
 				],
 			]
@@ -356,7 +419,8 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'label' => esc_html__( 'Autoplay', 'wpr-addons' ),
 				'type' => Controls_Manager::SWITCHER,
 				'condition' => [
-					'slider_item_link_type' => ['video-youtube', 'video-vimeo'],
+					'slider_content_type' => 'custom',
+					'slider_item_link_type' => ['video-youtube', 'video-vimeo', 'video-media'],
 				],
 			]
 		);
@@ -367,7 +431,8 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'label' => esc_html__( 'Loop', 'wpr-addons' ),
 				'type' => Controls_Manager::SWITCHER,
 				'condition' => [
-					'slider_item_link_type' => ['video-youtube', 'video-vimeo'],
+					'slider_content_type' => 'custom',
+					'slider_item_link_type' => ['video-youtube', 'video-vimeo','video-media'],
 				],
 			]
 		);
@@ -378,7 +443,20 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'label' => esc_html__( 'Mute', 'wpr-addons' ),
 				'type' => Controls_Manager::SWITCHER,
 				'condition' => [
-					'slider_item_link_type' => ['video-youtube', 'video-vimeo'],
+					'slider_content_type' => 'custom',
+					'slider_item_link_type' => ['video-youtube', 'video-vimeo', 'video-media'],
+				],
+			]
+		);
+
+		$repeater->add_control(
+			'slider_item_video_controls',
+			[
+				'label' => esc_html__( 'Controls', 'wpr-addons' ),
+				'type' => Controls_Manager::SWITCHER,
+				'condition' => [
+					'slider_content_type' => 'custom',
+					'slider_item_link_type' => ['video-youtube', 'video-vimeo', 'video-media'],
 				],
 			]
 		);
@@ -392,6 +470,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'description' => esc_html__( 'Specify a start time (in seconds)', 'wpr-addons' ),
 				'frontend_available' => true,
 				'condition' => [
+					'slider_content_type' => 'custom',
 					'slider_item_link_type' => ['video-youtube', 'video-vimeo'],
 					'slider_item_video_loop!' => 'yes',
 				],
@@ -407,6 +486,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'description' => esc_html__( 'Specify an end time (in seconds)', 'wpr-addons' ),
 				'frontend_available' => true,
 				'condition' => [
+					'slider_content_type' => 'custom',
 					'slider_item_link_type' => 'video-youtube',
 					'slider_item_video_loop!' => 'yes',
 				],
@@ -431,6 +511,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'label' => esc_html__( 'Background Overlay', 'wpr-addons' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
+				'condition' => [
+					'slider_content_type' => 'custom'
+				]
 			]
 		);
 
@@ -445,6 +528,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				],
 				'condition' => [
 					'slider_item_overlay' => 'yes',
+					'slider_content_type' => 'custom'
 				],
 			]
 		);
@@ -478,6 +562,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				],
 				'condition' => [
 					'slider_item_overlay' => 'yes',
+					'slider_content_type' => 'custom'
 				],
 			]
 		);
@@ -514,6 +599,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 					'h5' => esc_html__( 'H5', 'wpr-addons' ),
 					'h6' => esc_html__( 'H6', 'wpr-addons' )
 				],
+				'default' => 'h2',
 				'condition' => [
 					'slider_show_content' => 'yes',
 				]
@@ -525,6 +611,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label'  	=> esc_html__( 'Title', 'wpr-addons' ),
 				'type'   	=> Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => 'Slide Title',
 				'condition' => [
 					'slider_show_content' => 'yes',
@@ -545,6 +634,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 					'h5' => esc_html__( 'H5', 'wpr-addons' ),
 					'h6' => esc_html__( 'H6', 'wpr-addons' )
 				],
+				'default' => 'h3',
 				'condition' => [
 					'slider_show_content' => 'yes',
 				]
@@ -556,6 +646,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label'  	=> esc_html__( 'Sub Title', 'wpr-addons' ),
 				'type'   	=> Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => 'Slide Sub Title',
 				'condition' => [
 					'slider_show_content' => 'yes',
@@ -568,6 +661,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label'   	=> esc_html__( 'Description', 'wpr-addons' ),
 				'type'    	=> Controls_Manager::TEXTAREA,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => 'Slider Description Text, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur laoreet cursus volutpat. Aliquam sit amet ligula et justo tincidunt laoreet non vitae lorem. ',
 				'condition' => [
 					'slider_show_content' => 'yes',
@@ -616,6 +712,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Text', 'wpr-addons' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => 'Button 1',
 				'condition' => [
 					'slider_item_btn_1' => 'yes',
@@ -643,6 +742,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Link', 'wpr-addons' ),
 				'type' => Controls_Manager::URL,
+				'dynamic' => [
+					'active' => true,
+				],
 				'label_block' => false,
 				'placeholder' => esc_html__( 'https://www.your-link.com', 'wpr-addons' ),
 				'condition' => [
@@ -693,6 +795,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Text', 'wpr-addons' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => 'Button 2',
 				'condition' => [
 					'slider_item_btn_2' => 'yes',
@@ -720,6 +825,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Link', 'wpr-addons' ),
 				'type' => Controls_Manager::URL,
+				'dynamic' => [
+					'active' => true,
+				],
 				'label_block' => false,
 				'placeholder' => esc_html__( 'https://www.your-link.com', 'wpr-addons' ),
 				'condition' => [
@@ -802,6 +910,19 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'slider_image_type',
+			[
+				'label' => esc_html__( 'Media Type', 'wpr-addons' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'background',
+				'options' =>  [
+					'background' => esc_html__( 'Background', 'wpr-addons' ),
+					'image' => esc_html__( 'Image', 'wpr-addons' )
+				]
+			]
+		);
+
 		$this->add_responsive_control(
 			'slider_height',
 			[
@@ -827,6 +948,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 					'{{WRAPPER}} .wpr-slider-item' => 'height: {{SIZE}}{{UNIT}};',
 				],
 				'separator' => 'before',
+				'condition' => [
+					'slider_image_type' => 'background'
+				]
 			]
 		);
 
@@ -1104,6 +1228,9 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			[
 				'label' => esc_html__( 'Button URL', 'wpr-addons' ),
 				'type' => Controls_Manager::URL,
+				'dynamic' => [
+					'active' => true,
+				],
 				'label_block' => false,
 				'placeholder' => esc_html__( 'https://www.your-link.com', 'wpr-addons' ),
 				'condition' => [
@@ -1192,6 +1319,8 @@ class Wpr_Advanced_Slider extends Widget_Base {
 		// Section: Pro Features
 		Utilities::pro_features_list_section( $this, '', Controls_Manager::RAW_HTML, 'advanced-slider', [
 			'Add Unlimited Slides',
+			'Youtube & Vimeo Video Support',
+			'Custom Video Support',
 			'Vertical Sliding',
 			'Elementor Templates Slider option',
 			'Scroll to Section Button',
@@ -2191,7 +2320,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 
 		// Styles
 		// Section: Video Icon -------
-	/*	$this->start_controls_section(
+		$this->start_controls_section(
 			'wpr__section_style_slider_video_btn',
 			[
 				'label' => esc_html__( 'Video Icon', 'wpr-addons' ),
@@ -2199,7 +2328,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'slider_video_btn_size',
 			[
 				'label' => esc_html__( 'Video Icon Size', 'wpr-addons' ),
@@ -2211,7 +2340,8 @@ class Wpr_Advanced_Slider extends Widget_Base {
 					'medium' => esc_html__( 'Medium', 'wpr-addons' ),
 					'large' => esc_html__( 'Large', 'wpr-addons' ),
 				],
-				'prefix_class' => 'wpr-slider-video-icon-size-',
+				'frontend_available' => true,
+				// 'prefix_class' => 'wpr-slider-video-icon-size-%s',
 			]
 		);
 	
@@ -2222,12 +2352,12 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'default' => '#ffffff',
 				'selectors' => [
-					'{{WRAPPER}} .wpr-slider-video-btn' => 'color: {{VALUE}};border-color: {{VALUE}};',
+					'{{WRAPPER}} .wpr-slider-video-btn' => 'color: {{VALUE}}; border-color: {{VALUE}};',
 				],
 			]
-		);*/
+		);
 
-		// $this->end_controls_section();
+		$this->end_controls_section();
 		
 		// Styles
 		// Section: Navigation ---
@@ -2726,6 +2856,7 @@ class Wpr_Advanced_Slider extends Widget_Base {
 		}
 		
 		foreach ( $settings['slider_items'] as $key => $item ) {
+
 			if ( ! wpr_fs()->can_use_premium_code() && $key === 4 ) {
 				break;
 			}
@@ -2764,11 +2895,19 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				$btn_attribute_2 = '';
 				$icon_html_2 = $item['slider_item_btn_text_2'];
 				$ken_burn_class = '';
-				$item_bg_image_url = Group_Control_Image_Size::get_attachment_image_src( $item['slider_item_bg_image']['id'], 'slider_image_size', $settings );
+				if( isset($item['slider_item_bg_image']['source']) && $item['slider_item_bg_image']['source'] == 'url' ) {
+					$item_bg_image_url = $item['slider_item_bg_image']['url'];
+				} else {
+					$item_bg_image_url = Group_Control_Image_Size::get_attachment_image_src( $item['slider_item_bg_image']['id'], 'slider_image_size', $settings );
+				}
 
 				$item_video_src = $item['slider_item_video_src'];
 				$item_video_start = $item['slider_item_video_start'];
 				$item_video_end = $item['slider_item_video_end'];
+
+				if ( $item_type === 'video-media' ) {
+					$item_video_src = $item['hosted_url']['url'];
+				}
 
 				if ( '' !== $item['slider_item_btn_icon_1']['value'] ) {
 					ob_start();
@@ -2797,11 +2936,27 @@ class Wpr_Advanced_Slider extends Widget_Base {
 
 					if ( $item_type === 'video-youtube' ) {
 
+						
 						preg_match('![?&]{1}v=([^&]+)!', $item_video_src, $item_video_id );
-						$item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] .'?controls=0&autoplay=1';
+
+						$item_bg_image_url = 'https://i.ytimg.com/vi_webp/'. $item_video_id[1] .'/maxresdefault.webp';
+						
+						if ( 'yes' === $item['slider_item_video_autoplay'] ) {
+							// GOGA - if there is no way to autoplay with api we need mute=1 for this purpose
+							// $item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] .'?autoplay=1&enablejsapi=1';
+							// $item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] .'?autoplay=1&mute=1';
+							$item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] .'?autoplay=1';
+							// $item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] .'?controls=0&autoplay=1';
+						} else {
+							$item_video_src = 'https://www.youtube.com/embed/'. $item_video_id[1] . '?enablejsapi=1';
+						}
 
 						if ( $item['slider_item_video_mute'] === 'yes' ) {
 							$item_video_src .= '&mute=1';
+						}
+
+						if ( $item['slider_item_video_controls'] !== 'yes') {
+							$item_video_src .= '&controls=0';
 						}
 
 						if ( $item['slider_item_video_loop'] === 'yes' ) {
@@ -2826,12 +2981,25 @@ class Wpr_Advanced_Slider extends Widget_Base {
 							$item_video_src .= '&muted=1';
 						}
 
+						if ( $item['slider_item_video_controls'] !== 'yes') {
+							$item_video_src .= '&controls=0';
+						}
+
 						if ( $item['slider_item_video_loop'] === 'yes' ) {
 							$item_video_src .= '&loop=1';
 						} elseif ( ! empty( $item_video_start ) ) {
 							$item_video_src .= '&#t='. gmdate( 'H', $item_video_start ) .'h'. gmdate( 'i', $item_video_start ) .'m'. gmdate( 's', $item_video_start ) .'s';
 						}
+						
+					} elseif ( $item_type === 'video-media' ) {
+							$item_video_src = $item['hosted_url']['url'];
+							$item_video_mute = $item['slider_item_video_mute'] === 'yes' ? 'muted' : '';
+							$item_video_loop = $item['slider_item_video_loop'] === 'yes' ? 'loop' : '';
+							$item_video_controls = $item['slider_item_video_controls'] === 'yes' ? 'controls' : '';
 
+							$this->add_render_attribute( 'slider_item'. $item_count, 'data-video-mute', $item_video_mute );
+							$this->add_render_attribute( 'slider_item'. $item_count, 'data-video-loop', $item_video_loop );
+							$this->add_render_attribute( 'slider_item'. $item_count, 'data-video-controls', $item_video_controls );
 					}
 
 					$this->add_render_attribute( 'slider_item'. $item_count, 'data-video-src', $item_video_src );
@@ -2840,9 +3008,13 @@ class Wpr_Advanced_Slider extends Widget_Base {
 				$slider_item_attribute = $this->get_render_attribute_string( 'slider_item'. $item_count );
 
 				$slider_html .= '<div '. $slider_item_attribute .'>';
-			
-				// Slider Background Image
-				$slider_html .= '<div class="wpr-slider-item-bg '. esc_attr($ken_burn_class) .'" style="background-image: url('. esc_url($item_bg_image_url) .')"></div>';
+
+				if ( 'image' == $settings['slider_image_type'] ) {
+					$slider_html .= '<img class="wpr-slider-img" src="'. esc_url($item_bg_image_url) .'" />';
+				} else {
+					// Slider Background Image
+					$slider_html .= '<div class="wpr-slider-item-bg '. esc_attr($ken_burn_class) .'" style="background-image: url('. esc_url($item_bg_image_url) .')"></div>';
+				}
 
 				if ( 'slide_vertical' === $settings['slider_effect'] ) {
 					$slider_amount = 1;
@@ -2862,7 +3034,11 @@ class Wpr_Advanced_Slider extends Widget_Base {
 
 				// Slider Content Attributes
 				$this->add_render_attribute( 'slider_container'. $item_count, 'class', 'wpr-cv-container' );	
-				$this->add_render_attribute( 'slider_outer'. $item_count, 'class', 'wpr-cv-outer' );	
+				$this->add_render_attribute( 'slider_outer'. $item_count, 'class', 'wpr-cv-outer' );
+
+				if ( $settings['slider_effect'] != 'fade' ) {
+					$settings['slider_content_animation'] = 'none';
+				}
 
 				if ( $settings['slider_content_animation'] !== 'none' ) {
 					if ( $slider_amount === 1 ) {
@@ -3020,6 +3196,14 @@ class Wpr_Advanced_Slider extends Widget_Base {
 		$slider_is_rtl = is_rtl();
 		$slider_direction = $slider_is_rtl ? 'rtl' : 'ltr';
 
+		$slider_video_btn_widescreen = isset($settings['slider_video_btn_size_widescreen']) && !empty($settings['slider_video_btn_size_widescreen']) ? $settings['slider_video_btn_size_widescreen'] : $settings['slider_video_btn_size'];
+		$slider_video_btn_desktop = isset($settings['slider_video_btn_size']) && !empty($settings['slider_video_btn_size']) ? $settings['slider_video_btn_size'] : $slider_video_btn_widescreen;
+		$slider_video_btn_laptop =  isset($settings['slider_video_btn_size_laptop']) && !empty($settings['slider_video_btn_size_laptop']) ? $settings['slider_video_btn_size_laptop'] : $slider_video_btn_desktop;
+		$slider_video_btn_tablet_extra =  isset($settings['slider_video_btn_size_tablet_extra']) && !empty($settings['slider_video_btn_size_tablet_extra']) ? $settings['slider_video_btn_size_tablet_extra'] : $slider_video_btn_laptop;
+		$slider_video_btn_tablet =  isset($settings['slider_video_btn_size_tablet']) && !empty($settings['slider_video_btn_size_tablet']) ? $settings['slider_video_btn_size_tablet'] : $slider_video_btn_tablet_extra;
+		$slider_video_btn_mobile_extra =  isset($settings['slider_video_btn_size_mobile_extra']) && !empty($settings['slider_video_btn_size_mobile_extra']) ? $settings['slider_video_btn_size_mobile_extra'] : $slider_video_btn_tablet;
+		$slider_video_btn_mobile =  isset($settings['slider_video_btn_size_mobile']) && !empty($settings['slider_video_btn_size_mobile']) ? $settings['slider_video_btn_size_mobile'] : $slider_video_btn_mobile_extra;
+
 		$slider_options = [
 			'rtl' => $slider_is_rtl,
 			'speed' => absint( $settings['slider_effect_duration'] * 1000 ),
@@ -3030,13 +3214,25 @@ class Wpr_Advanced_Slider extends Widget_Base {
 			'pauseOnHover' => $settings['slider_pause_on_hover'],
 			'prevArrow' => '#wpr-slider-prev-'. $this->get_id(),
 			'nextArrow' => '#wpr-slider-next-'. $this->get_id(),
-			'vertical' => 'slide_vertical' === $settings['slider_effect'] ? true : false
+			'vertical' => 'slide_vertical' === $settings['slider_effect'] ? true : false,
+			'adaptiveHeight' => true
 		];
 
 		$this->add_render_attribute( 'advanced-slider-attribute', [
 			'class' => 'wpr-advanced-slider',
 			'dir' => esc_attr( $slider_direction ),
 			'data-slick' => wp_json_encode( $slider_options ),
+			'data-video-btn-size' => wp_json_encode(
+				[
+					'widescreen' => $slider_video_btn_widescreen,
+					'desktop' => $slider_video_btn_desktop,
+					'laptop' => $slider_video_btn_laptop,
+					'tablet_extra' => $slider_video_btn_tablet_extra,
+					'tablet' => $slider_video_btn_tablet,
+					'mobile_extra' => $slider_video_btn_mobile_extra,
+					'mobile' => $slider_video_btn_mobile
+				]
+			)
 		] );
 
 		?>

@@ -701,13 +701,13 @@ echo  $left_menu_height_translate ;
 		-ms-transform: translateY(0px);
 		-o-transform: translateY(0px);
 		transform: translateY(0px);
-		z-index: 3000000;
+		z-index: 300000;
 	}
 	.mob-menu-slideout-over.show-nav-left .mobmenu-left-panel {
 		overflow: hidden;
 	}
 	.show-nav-left .mobmenu-panel.show-panel , .show-nav-right .mobmenu-panel.show-panel {
-		z-index: 3000000;
+		z-index: 300000;
 	}
 	/* Hides everything pushed outside of it */
 	.mob-menu-slideout .mobmenu-panel, .mob-menu-slideout-over .mobmenu-panel, .mob-menu-slideout .mobmenu-cart-panel, .mob-menu-slideout-over .mobmenu-cart-panel {

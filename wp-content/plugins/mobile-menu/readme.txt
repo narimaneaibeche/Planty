@@ -3,8 +3,8 @@ Contributors: takanakui, freemius, freslightlab
 link: http://profiles.wordpress.org/takanakui
 Tags:   mobile, navigation, responsive, menu,  responsive menu, mobile menu,  tablet menu, hamburger menu, hamburger, wordpress responsive menu, wordpress mobile menu, canvas menu
 Requires at least: 4.4
-Tested up to: 6.1
-Stable tag: 2.8.3
+Tested up to: 6.2
+Stable tag: 2.8.4
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,6 +135,13 @@ Not available at the moment
 == Changelog ==
 
 
+
+= 2.8.4 =
+* Fix! - Compatibility with WP 6.2
+* Improvment! - Update Freemius SDK
+ 
+= 2.8.3.2 =
+* Fix! - Fix incorrect logo width.
 
 = 2.8.3 =
 * New! - Possibility to open menus with enter key when got focus
